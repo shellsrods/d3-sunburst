@@ -104,7 +104,6 @@
 				})
 				.style("font-size",function(d){return pickSize(d.value);})
 				.text(function(d) {
-					//return d.depth>0 ?splitText(d.name,i, d.value):''; 
 					return splitText(d.name,i, d.value);
 				});
 			}
@@ -119,7 +118,7 @@
                 .attrTween("d", arcTween(d))
                 .each("end", function(e, i) {
                       // check if the animated element's data e lies within the visible angle span given in d
-                      if (e.x >= d.x && e.x < (d.x + d.dx)) {
+                      if (e.x >= d.x && e.x < (d.x + d.dx)) {//console.log('loop');
                           // get a selection of the associated text element
                           var arcText = d3.select(this.parentNode).select("text");
                           // fade in the text element and recalculate positions
@@ -128,8 +127,8 @@
                           .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
                           .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; })
 						  /////
-						  for(var i=0;i<3;i++){
-								arcText.append("tspan")
+						  //for(var i=0;i<3;i++){
+								//arcText.append("tspan")
 								.attr("x", function(d){ 
 									if(computeTextRotation(d) > 180){
 										if(d.depth == 1){
@@ -154,11 +153,11 @@
 										return i == 0?"0":"16";
 									}
 								})
-								.style("font-size",function(d){return pickSize(d.value);})
+								/*.style("font-size",function(d){return pickSize(d.value);})
 								.text(function(d) {
 									return splitText(d.name,i, d.value);
-								});
-							}
+								})*/;
+							//}
 						  /////
                       }
                 });
@@ -193,6 +192,8 @@
 			}else{
 				textArr[0] = text+'('+value+')';
 			}
+			console.log(text+" "+cnt+" "+value);
+			console.log(textArr[cnt]);
 			return textArr[cnt] == undefined?'':textArr[cnt];
 		}
 		
