@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    path {
+        stroke: #fff;
+        fill-rule: evenodd;
+    }
+
+    text {
+        font-family: sans-serif;
+    }
+	
+	#tooltip { background-color: white;
+			  padding: 3px 5px;
+			  border: 1px solid black;
+			  text-align: center;}
+
+</style>
+<body>
+    <script src="lib/d3.v3.min.js"></script>
+    <script>
+
+       var width = 1200,
+        height = 600,
+        radius = Math.min(width, height) / 2.2;
+		
+		var x = d3.scale.linear()
+        .range([0, 2 * Math.PI]);
+
+        var y = d3.scale.linear()
+        .range([0, radius]);
+		
+		//Tooltip description
+		var tooltip = d3.select("body")
+			.append("div")
+			.attr("id", "tooltip")
+			.style("position", "absolute")
+			.style("z-index", "10")
+			.style("opacity", 0);
+
+        var color = d3.scale.category20c();
+
+        var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+
+        var partition = d3.layout.partition()
+        .value(function(d) { return d.revenue; });
+    
+
+        var arc = d3.svg.arc()
+        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+        .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+
+        d3.json("data/flare-labeled_1.json", function(error, root) {
+            var g = svg.selectAll("g")
+            .data(partition.nodes(root))
+            .enter().append("g");
+
+            var path = g.append("path")
+            .attr("d", arc)
+            .style("fill", function(d, i) { return color(i); })
+            .on("click", click)
+			.on("mouseover", mouseOverArc)
+			.on("mousemove", mouseMoveArc)
+			.on("mouseout", mouseOutArc);
+
+			var text = g.append("text")
+			.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+            .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; });
+            
+			//var revenue = '';
+			for(var i=0;i<3;i++){
+				text.append("tspan")
+				.attr("x", function(d){ 
+					if(computeTextRotation(d) > 180){
+						if(d.depth == 1){
+							return "40";
+						}else if(d.depth == 2){
+							return (i == 1 || i == 2)? "45":"35";
+							//return "35";
+						}
+					}else{
+						if(d.depth == 0){
+							return "-45";
+						}else if(d.depth == 1){
+							return "-40";
+						}else if(d.depth == 2){
+							return "-35";
+						}
+					}
+				}) 
+				.attr("dy", function(d){
+					if(d.depth == 0){
+						return "-35";
+					}else{
+						return i == 0?"0":"16";
+					}
+				})
+				.style("font-size",function(d){return pickSize(d.value);})
+				.text(function(d) {
+					//return d.depth>0 ?splitText(d.name,i, d.value):''; 
+					return splitText(d.name,i, d.value);
+				});
+			}
+			
+
+            function click(d) {
+                // fade out all text elements
+                text.transition().attr("opacity", 0);
+
+                path.transition()
+                .duration(750)
+                .attrTween("d", arcTween(d))
+                .each("end", function(e, i) {
+                      // check if the animated element's data e lies within the visible angle span given in d
+                      if (e.x >= d.x && e.x < (d.x + d.dx)) {
+                          // get a selection of the associated text element
+                          var arcText = d3.select(this.parentNode).select("text");
+                          // fade in the text element and recalculate positions
+                          arcText.transition().duration(750)
+                          .attr("opacity", 1)
+                          .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+                          .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; })
+						  /////
+						  for(var i=0;i<3;i++){
+								arcText.append("tspan")
+								.attr("x", function(d){ 
+									if(computeTextRotation(d) > 180){
+										if(d.depth == 1){
+											return "40";
+										}else if(d.depth == 2){
+											return (i == 1 || i == 2)? "45":"35";
+										}
+									}else{
+										if(d.depth == 0){
+											return "-45";
+										}else if(d.depth == 1){
+											return "-40";
+										}else if(d.depth == 2){
+											return "-35";
+										}
+									}
+								}) 
+								.attr("dy", function(d){
+									if(d.depth == 0){
+										return "-35";
+									}else{
+										return i == 0?"0":"16";
+									}
+								})
+								.style("font-size",function(d){return pickSize(d.value);})
+								.text(function(d) {
+									return splitText(d.name,i, d.value);
+								});
+							}
+						  /////
+                      }
+                });
+            }
+        });
+
+        d3.select(self.frameElement).style("height", height + "px");
+
+        // Interpolate the scales!
+        function arcTween(d) {
+            var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+            yd = d3.interpolate(y.domain(), [d.y, 1]),
+            yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+            return function(d, i) {
+                return i
+                ? function(t) { return arc(d); }
+                : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+            };
+        }
+
+		function splitText(text,cnt, value){
+			var textArr = new Array();
+			if(text.indexOf('&') > -1){
+				textArr = text.split('&');
+				textArr[textArr.length-1] = textArr[textArr.length-1]+'('+value+')';
+			}else if(text.indexOf('-') > -1){
+				textArr = text.split('-');
+				textArr[textArr.length-1] = textArr[textArr.length-1]+'('+value+')';
+			}else if(text.indexOf(' ') > -1){
+				textArr = text.split(' ');
+				textArr[textArr.length-1] = textArr[textArr.length-1]+'('+value+')';
+			}else{
+				textArr[0] = text+'('+value+')';
+			}
+			return textArr[cnt] == undefined?'':textArr[cnt];
+		}
+		
+        function computeTextRotation(d) {
+            var ang = (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+			if(d.depth == 0){
+				return 0;
+			}else{
+				return (ang > 90) ? 180 + ang : ang;
+			}
+        }
+		
+		/*function format_number(x) {
+		  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		}*/
+
+		function format_description(d) {
+		  //var description = d.description;console.log(d.value);
+			//  return  '<b>' + d.name + '</b></br>'+ d.description + '<br> (' + format_number(d.value) + ')';
+			var text_pm = d.project_margin == undefined?'':" Project margin: " + d.project_margin + '%';
+			return  '<b>' + d.name + '</b></br>'+ d.manager + '<br> '+ text_pm;
+		}
+
+		function mouseOverArc(d) {
+			 d3.select(this).attr("stroke","black")
+			 
+          tooltip.html(format_description(d));
+          return tooltip.transition()
+            .duration(50)
+            .style("opacity", 0.9);
+        }
+
+		function mouseOutArc(){
+			d3.select(this).attr("stroke","")
+			return tooltip.style("opacity", 0);
+		}
+
+		function mouseMoveArc (d) {
+				  return tooltip
+					.style("top", (d3.event.pageY-10)+"px")
+					.style("left", (d3.event.pageX+10)+"px");
+		}
+		
+		function pickSize(val){
+			var size;
+		  switch (true) {
+		   case val < 150 : size = val/10 + "px"; break;
+		   case val >= 150 && val < 500 : size = val/25+ "px"; break;
+		   case val >= 500 && val < 800 : size = val/55+ "px"; break;
+		   case val >= 800 && val < 1200 : size = val/100+ "px"; break;
+		   case val >= 1200 && val < 1500 : size = val/120 + "px"; break;
+		   case val >= 1500 && val < 3000 : size = val/150 + "px"; break;
+		   case val >= 3000 && val < 4000 : size = val/250 + "px"; break;
+		   default: size = "16px";
+		  }
+		  return size;
+		 }
+    </script>
