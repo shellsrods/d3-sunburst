@@ -71,19 +71,18 @@
 			.on("mouseout", mouseOutArc);
 
 			var text = g.append("text")
-			.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
-            .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; });
+			.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d,0) + ")"; })
+            .attr('text-anchor', function (d) { return computeTextRotation(d,0) > 180 ? "end" : "start"; });
             
 			//var revenue = '';
 			for(var i=0;i<3;i++){
 				text.append("tspan")
-				.attr("x", function(d){ 
-					if(computeTextRotation(d) > 180){
+				.attr("x", function(d){
+					if(computeTextRotation(d,0) > 180){
 						if(d.depth == 1){
 							return "40";
 						}else if(d.depth == 2){
 							return (i == 1 || i == 2)? "45":"35";
-							//return "35";
 						}
 					}else{
 						if(d.depth == 0){
@@ -109,7 +108,8 @@
 			}
 			
 
-            function click(d) {
+            function click(d) {//console.log(d.depth);
+				var level = d.depth == 1? 1:0;
                 // fade out all text elements
                 text.transition().attr("opacity", 0);
 
@@ -124,40 +124,60 @@
                           // fade in the text element and recalculate positions
                           arcText.transition().duration(750)
                           .attr("opacity", 1)
-                          .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
-                          .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; })
+                          .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d,level) + ")"; })
+                          .attr('text-anchor', function (d) { return computeTextRotation(d,level) > 180 ? "end" : "start"; })
 						  /////
-						  //for(var i=0;i<3;i++){
-								//arcText.append("tspan")
-								.attr("x", function(d){ 
-									if(computeTextRotation(d) > 180){
-										if(d.depth == 1){
-											return "40";
-										}else if(d.depth == 2){
-											return (i == 1 || i == 2)? "45":"35";
-										}
-									}else{
-										if(d.depth == 0){
-											return "-45";
-										}else if(d.depth == 1){
-											return "-40";
-										}else if(d.depth == 2){
-											return "-35";
-										}
+						  //console.log(level);
+						  var tspan;
+						  if(level == 1){
+							tspan = arcText.select("tspan")
+							.attr("x", function(d){//console.log("yes");
+								if(computeTextRotation(d,level) > 180){
+									if(d.depth == 2){
+										return "40";
 									}
-								}) 
-								.attr("dy", function(d){
+								}else{
+									if(d.depth == 1){
+										return "-45";
+									}else if(d.depth == 2){
+										return "-40";
+									}
+								}
+							}) 
+							.attr("dy", function(d){
+								if(d.depth == 1){
+									return "-35";
+								}else{
+									return "16";
+								}
+							});
+						  }else if(level == 0){
+							tspan = arcText.select("tspan")
+							.attr("x", function(d){
+								if(computeTextRotation(d,0) > 180){
+									if(d.depth == 1){
+										return "40";
+									}else if(d.depth == 2){
+										return (i == 1 || i == 2)? "45":"35";
+									}
+								}else{
 									if(d.depth == 0){
+										return "-45";
+									}else if(d.depth == 1){
+										return "-40";
+									}else if(d.depth == 2){
 										return "-35";
-									}else{
-										return i == 0?"0":"16";
 									}
-								})
-								/*.style("font-size",function(d){return pickSize(d.value);})
-								.text(function(d) {
-									return splitText(d.name,i, d.value);
-								})*/;
-							//}
+								}
+							}) 
+							.attr("dy", function(d){
+								if(d.depth == 0){
+									return "-35";
+								}else{
+									return i == 0?"0":"16";
+								}
+							})
+						  }
 						  /////
                       }
                 });
@@ -192,14 +212,14 @@
 			}else{
 				textArr[0] = text+'('+value+')';
 			}
-			console.log(text+" "+cnt+" "+value);
-			console.log(textArr[cnt]);
+			/*console.log(text+" "+cnt+" "+value);
+			console.log(textArr[cnt]);*/
 			return textArr[cnt] == undefined?'':textArr[cnt];
 		}
 		
-        function computeTextRotation(d) {
+        function computeTextRotation(d, level) { // level variable to indicate the level-depth that the graph is in
             var ang = (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
-			if(d.depth == 0){
+			if(d.depth == 0 || (level == 1 && d.depth == 1)){
 				return 0;
 			}else{
 				return (ang > 90) ? 180 + ang : ang;
