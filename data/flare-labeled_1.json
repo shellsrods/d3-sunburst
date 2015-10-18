@@ -1,4 +1,4 @@
-{
+[{
  "name": "DGSL",
  "manager": "",
  "children": [
@@ -6,33 +6,33 @@
    "name": "IT",
    "manager": "Sachin Rane",
    "children": [
-      {"name": "AMS", "manager": "AgglomerativeCluster", "revenue": 1500, "project_margin": 25},
-      {"name": "PS", "manager": "CommunityStructure", "revenue": 1612, "project_margin": 80},
-      {"name": "CDIS", "manager": "HierarchicalCluster", "revenue": 599, "project_margin": 65},
-      {"name": "IMP", "manager": "MergeEdge", "revenue": 743, "project_margin": 38},
-	  {"name": "VISTA", "manager": "MergeEdge", "revenue": 1129, "project_margin": 15},
-	  {"name": "RNA Tech.", "manager": "MergeEdge", "revenue": 756, "project_margin": 64},
-	  {"name": "AMS - BUPA", "manager": "MergeEdge", "revenue": 1222, "project_margin": 22},
-	  {"name": "AMS - Others", "manager": "MergeEdge", "revenue": 699, "project_margin": 94},
-	  {"name": "Nsights", "manager": "MergeEdge", "revenue": 1168, "project_margin": 21},
-	  {"name": "Nsights-Impl. & Support", "manager": "MergeEdge", "revenue": 1800, "project_margin": 44},
-	  {"name": "Nsights-Dev.", "manager": "MergeEdge", "revenue": 503, "project_margin": 52},
-	  {"name": "TES", "manager": "BetweennessCentrality", "revenue": 1245, "project_margin": 55},
-	  {"name": "IPM", "manager": "BetweennessCentrality", "revenue": 398, "project_margin": 12},
-	  {"name": "IPM-Dev.", "manager": "BetweennessCentrality", "revenue": 658, "project_margin": 65},
-	  {"name": "IPM-Impl. & Support", "manager": "BetweennessCentrality", "revenue": 1157, "project_margin": 27}
+      {"name": "AMS", "manager": "AgglomerativeCluster", "revenue": 1500, "project_margin": 25,"colour": "#f9f0ab"},
+      {"name": "PS", "manager": "CommunityStructure", "revenue": 1612, "project_margin": 80,"colour": "#f9f0ab"},
+      {"name": "CDIS", "manager": "HierarchicalCluster", "revenue": 599, "project_margin": 65,"colour": "#f9f0ab"},
+      {"name": "IMP", "manager": "MergeEdge", "revenue": 743, "project_margin": 38,"colour": "#f9f0ab"},
+	  {"name": "VISTA", "manager": "MergeEdge", "revenue": 1129, "project_margin": 15,"colour": "#f9f0ab"},
+	  {"name": "RNA Tech.", "manager": "MergeEdge", "revenue": 756, "project_margin": 64,"colour": "#f9f0ab"},
+	  {"name": "AMS - BUPA", "manager": "MergeEdge", "revenue": 1222, "project_margin": 22,"colour": "#f9f0ab"},
+	  {"name": "AMS - Others", "manager": "MergeEdge", "revenue": 699, "project_margin": 94,"colour": "#f9f0ab"},
+	  {"name": "Nsights", "manager": "MergeEdge", "revenue": 1168, "project_margin": 21,"colour": "#f9f0ab"},
+	  {"name": "Nsights-Impl. & Support", "manager": "MergeEdge", "revenue": 1800, "project_margin": 44,"colour": "#f9f0ab"},
+	  {"name": "Nsights-Dev.", "manager": "MergeEdge", "revenue": 503, "project_margin": 52,"colour": "#f9f5ab"},
+	  {"name": "TES", "manager": "BetweennessCentrality", "revenue": 1245, "project_margin": 55,"colour": "#f9f0ab"},
+	  {"name": "IPM", "manager": "BetweennessCentrality", "revenue": 398, "project_margin": 12,"colour": "#f9f0ab"},
+	  {"name": "IPM-Dev.", "manager": "BetweennessCentrality", "revenue": 658, "project_margin": 65,"colour": "#f9f0ab"},
+	  {"name": "IPM-Impl. & Support", "manager": "BetweennessCentrality", "revenue": 1157, "project_margin": 27,"colour": "#f9f0ab"}
    ]
   },
   {
    "name": "BPO",
    "manager": "Manager X",
    "children": [
-    {"name": "DPRS", "manager": "Easing", "revenue": 890, "project_margin": 62},
-    {"name": "RnA", "manager": "FunctionSequence", "revenue": 1366, "project_margin": 28},
-    {"name": "DMS", "manager": "interpolate", "revenue": 1802, "project_margin": 77},
-    {"name": "FAS", "manager": "ISchedulable", "revenue": 622, "project_margin": 20},
-    {"name": "DSSPL", "manager": "Parallel", "revenue": 206, "project_margin": 34}
+    {"name": "DPRS", "manager": "Easing", "revenue": 890, "project_margin": 62,"colour": "#f9f0ab"},
+    {"name": "RnA", "manager": "FunctionSequence", "revenue": 1366, "project_margin": 28,"colour": "#f9f0ab"},
+    {"name": "DMS", "manager": "interpolate", "revenue": 1802, "project_margin": 77,"colour": "#f9f0ab"},
+    {"name": "FAS", "manager": "ISchedulable", "revenue": 622, "project_margin": 20,"colour": "#f9f0ab"},
+    {"name": "DSSPL", "manager": "Parallel", "revenue": 206, "project_margin": 34,"colour": "#f9a0ab"}
    ]
   }
  ]
-}
+}]

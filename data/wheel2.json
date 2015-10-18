@@ -1,0 +1,49 @@
+[
+  {
+    "name": "Aromas",
+	"manager": "Sachin Rane",
+    "children": [
+      {
+        "name": "Enzymatic",
+		"manager": "Sachin Rane",
+        "colour": "#f9f0ab"
+      },
+      {
+        "name": "Sugar Browning",
+		"manager": "Sachin Rane",
+        "colour": "#d6a680"
+      },
+      {
+        "name": "Dry Distillation",
+		"manager": "Sachin Rane",
+        "colour": "#8b6397"
+      }
+    ]
+  },
+  {
+    "name": "Tastes",
+	"manager": "Sachin Rane",
+    "children": [
+      {
+        "name": "Bitter",
+		"manager": "Sachin Rane",
+        "colour": "#aaa1cc"
+      },
+      {
+        "name": "Salt",
+		"manager": "Sachin Rane",
+        "colour": "#eda994"
+      },
+      {
+        "name": "Sweet",
+		"manager": "Sachin Rane",
+        "colour": "#efd95f"
+      },
+      {
+        "name": "Sour",
+		"manager": "Sachin Rane",
+        "colour": "#dfd961"
+      }
+    ]
+  }
+]
