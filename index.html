@@ -17,6 +17,10 @@
 			  text-align: center;}
 
 </style>
+<head>
+	<title>DGSL Sunburst Chart</title>
+	<h2 align="center">DGSL Sunburst Chart</h2>
+</head>
 <body>
     <script src="lib/d3.v3.min.js"></script>
     <script>
@@ -57,7 +61,7 @@
         .innerRadius(function(d) { return Math.max(0, y(d.y)); })
         .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-        d3.json("data/flare-labeled_1.json", function(error, root) {
+        d3.json("data/pulse.json", function(error, root) {
             var g = svg.selectAll("g")
             .data(partition.nodes(root))
             .enter().append("g");
@@ -65,50 +69,30 @@
             var path = g.append("path")
             .attr("d", arc)
             .style("fill", function(d, i) { return color(i); })
-            .on("click", click)
+            .on("click", function(d){ return d.depth == 2? null : click(d);})
 			.on("mouseover", mouseOverArc)
 			.on("mousemove", mouseMoveArc)
 			.on("mouseout", mouseOutArc);
 
 			var text = g.append("text")
 			.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d,0) + ")"; })
-            .attr('text-anchor', function (d) { return computeTextRotation(d,0) > 180 ? "end" : "start"; });
+            .attr('text-anchor', function (d) { return computeTextRotation(d,0) > 180 ? "end" : "start"; })
+			.style("font-size",function(d){return pickSize(d.value);});
             
-			for(var i=0;i<3;i++){
-				text.append("tspan")
-				.attr("x", function(d){
-					d.testclass=i;
-					if(computeTextRotation(d,0) > 180){
-						if(d.depth == 1){
-							return "40";
-						}else if(d.depth == 2){
-							return (i == 1 || i == 2)? "45":"35";
-						}
-					}else{
-						if(d.depth == 0){
-							return "-45";
-						}else if(d.depth == 1){
-							return "-40";
-						}else if(d.depth == 2){
-							return "-35";
-						}
-					}
-				}) 
-				.attr("dy", function(d){
-					if(d.depth == 0){
-						return "-35";
-					}else{
-						return i == 0?"0":"11";
-					}
-				})
-				.style("font-size",function(d){return pickSize(d.value);})
-				.text(function(d) {
-					return splitText(d.name,i, d.value);
-				});
-			}
+			text.append("tspan")
+			  .attr("x", function(d){ return d.depth == 0? "-21":"0";})
+			  .attr("dy", function(d){ return d.depth == 0? "1.5em":"0";})
+			  .text(function(d) { return d.name.split(" ")[0]; });
+			text.append("tspan")
+			  .attr("x", 0)
+			  .attr("dy", "1em")
+			  .text(function(d) { return d.name.split(" ")[1]; });
+			text.append("tspan")
+			  .attr("x", function(d){ return d.depth == 0? "-19":"0";})
+			  .attr("dy", "1em")
+			  .text(function(d) { return d.value; });
 			
-
-            function click(d) {//console.log(d.depth);
+            function click(d) {
 				var level = d.depth == 1? 1:0;
                 // fade out all text elements
                 text.transition().attr("opacity", 0);
@@ -118,7 +102,7 @@
                 .attrTween("d", arcTween(d))
                 .each("end", function(e, i) {
                       // check if the animated element's data e lies within the visible angle span given in d
-                      if (e.x >= d.x && e.x < (d.x + d.dx)) {//console.log('loop');
+                      if (e.x >= d.x && e.x < (d.x + d.dx)) {
                           // get a selection of the associated text element
                           var arcText = d3.select(this.parentNode).select("text");
                           // fade in the text element and recalculate positions
@@ -126,64 +110,7 @@
                           .attr("opacity", 1)
                           .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d,level) + ")"; })
                           .attr('text-anchor', function (d) { return computeTextRotation(d,level) > 180 ? "end" : "start"; })
-						  /////
-						  //console.log(level);
-						  var tspan;
-						  if(level == 1){
-							/*tspan = arcText.select("tspan")
-							.attr("x", function(d){
-								if(computeTextRotation(d,level) > 180){console.log(d.name + " " + d.depth);
-									if(d.depth == 2){
-										return "40";
-									}
-								}else{
-									if(d.depth == 1){
-										return "-45";
-									}else if(d.depth == 2){
-										return "-40";
-									}
-								}
-							}) 
-							.attr("dy", function(d){//console.log("yes");
-								if(d.depth == 1){
-									return "-35";
-								}else{
-									return "11";
-								}
-							});*/
-						  }else if(level == 0){
-							//tspan = arcText.select("tspan")
-							/*tspan = d3.select(this.parentNode).select("tspan")
-							.attr("x", function(d){
-								//console.log(d3.select(this));
-								//console.log(d.testclass);
-								if(computeTextRotation(d,0) > 180){//console.log(this);
-									if(d.depth == 1){
-										return "40";
-									}else if(d.depth == 2){
-										return "45";
-										//return (i == 1 || i == 2)? "45":"35";
-									}
-								}else{
-									if(d.depth == 0){
-										return "-45";
-									}else if(d.depth == 1){
-										return "-40";
-									}else if(d.depth == 2){
-										return "-35";
-									}
-								}
-							}) 
-							.attr("dy", function(d){
-								if(d.depth == 0){
-									return "-35";
-								}else{
-									return "0";
-									//return i == 0?"0":"16";
-								}
-							})*/
-						  }
-						  /////
+						  
                       }
                 });
             }
@@ -203,26 +130,7 @@
             };
         }
 
-		function splitText(text,cnt, value){
-			var textArr = new Array();
-			if(text.indexOf('&') > -1){
-				textArr = text.split('&');
-				textArr[textArr.length-1] = textArr[textArr.length-1]+'('+value+')';
-			}else if(text.indexOf('-') > -1){
-				textArr = text.split('-');
-				textArr[textArr.length-1] = textArr[textArr.length-1]+'('+value+')';
-			}else if(text.indexOf(' ') > -1){
-				textArr = text.split(' ');
-				textArr[textArr.length-1] = textArr[textArr.length-1]+'('+value+')';
-			}else{
-				textArr[0] = text+'('+value+')';
-			}
-			/*console.log(text+" "+cnt+" "+value);
-			console.log(textArr[cnt]);*/
-			return textArr[cnt] == undefined?'':textArr[cnt];
-		}
-		
-        function computeTextRotation(d, level) { // level variable to indicate the level-depth that the graph is in
+		function computeTextRotation(d, level) { // level variable to indicate the level-depth that the graph is on
             var ang = (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
 			if(d.depth == 0 || (level == 1 && d.depth == 1)){
 				return 0;
@@ -231,13 +139,7 @@
 			}
         }
 		
-		/*function format_number(x) {
-		  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-		}*/
-
 		function format_description(d) {
-		  //var description = d.description;console.log(d.value);
-			//  return  '<b>' + d.name + '</b></br>'+ d.description + '<br> (' + format_number(d.value) + ')';
 			var text_pm = d.project_margin == undefined?'':" Project margin: " + d.project_margin + '%';
 			return  '<b>' + d.name + '</b></br>'+ d.manager + '<br> '+ text_pm;
 		}
@@ -266,14 +168,15 @@
 			var size;
 		  switch (true) {
 		   case val < 150 : size = val/10 + "px"; break;
-		   case val >= 150 && val < 500 : size = val/25+ "px"; break;
+		   case val >= 150 && val < 500 : size = val/30+ "px"; break;
 		   case val >= 500 && val < 800 : size = val/55+ "px"; break;
-		   case val >= 800 && val < 1200 : size = val/100+ "px"; break;
-		   case val >= 1200 && val < 1500 : size = val/120 + "px"; break;
-		   case val >= 1500 && val < 3000 : size = val/150 + "px"; break;
-		   case val >= 3000 && val < 4000 : size = val/250 + "px"; break;
+		   case val >= 800 && val < 1200 : size = val/70+ "px"; break;
+		   case val >= 1200 && val < 1500 : size = val/100 + "px"; break;
+		   case val >= 1500 && val < 3000 : size = val/130 + "px"; break;
+		   case val >= 3000 && val < 4000 : size = val/180 + "px"; break;
 		   default: size = "16px";
 		  }
 		  return size;
 		 }
     </script>
+</body>
